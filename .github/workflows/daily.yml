@@ -1,0 +1,22 @@
+name: Daily Thinkinghub Report
+on:
+  schedule:
+    - cron: '0 0 * * *' # 北京时间每天上午 8:00
+  workflow_dispatch: # 允许手动运行
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run Script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          LARK_WEBHOOK: ${{ secrets.LARK_WEBHOOK }}
+        run: python main.py
