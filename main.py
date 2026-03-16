@@ -2,7 +2,7 @@ import os
 import requests
 import feedparser
 import yaml
-from google import genai
+import google.generativeai as genai
 import random
 import sys
 
@@ -10,65 +10,69 @@ def log(msg):
     print(f"--- [LOG]: {msg} ---")
     sys.stdout.flush()
 
-log("🚀 Thinkinghub 2026 现代引擎启动...")
+log("🚀 Thinkinghub 引擎强制启动...")
 API_KEY = os.getenv("GEMINI_API_KEY")
 LARK_WEBHOOK = os.getenv("LARK_WEBHOOK")
 
 if not API_KEY or not LARK_WEBHOOK:
-    log("❌ 错误：环境变量缺失")
+    log("❌ 错误：环境变量缺失，请检查 GitHub Secrets")
     sys.exit(1)
 
-# 使用最新的 google-genai 客户端
-client = genai.Client(api_key=API_KEY)
+genai.configure(api_key=API_KEY)
 
-def fetch_content(url):
-    try:
-        res = requests.get(f"https://r.jina.ai/{url}", timeout=30)
-        return res.text[:8000] 
-    except Exception as e:
-        log(f"抓取失败: {e}")
-        return ""
+def get_ai_response(content):
+    # 尝试 3 种不同的模型调用路径，彻底解决 404 问题
+    models_to_try = ['gemini-1.5-flash', 'models/gemini-1.5-flash', 'gemini-pro']
+    prompt = f"分析文章：{content[:6000]}。请提供一个能激荡思考、反常识的视角，100字内。"
+    
+    for m_name in models_to_try:
+        try:
+            log(f"正在尝试模型: {m_name}")
+            model = genai.GenerativeModel(m_name)
+            response = model.generate_content(prompt)
+            return response.text
+        except Exception as e:
+            log(f"模型 {m_name} 报错: {str(e)[:50]}")
+            continue
+    return None
 
 def main():
-    log("📂 读取 38 个顶级信源清单...")
+    log("📂 读取信源清单...")
     with open("sources.yaml", "r", encoding='utf-8') as f:
         config = yaml.safe_load(f)
     
     final_reports = []
-    # 随机选 4 个源进行思维激荡
+    # 随机选 4 个源 [cite: 3]
     selected_cats = random.sample(config['categories'], 4)
     
     for category in selected_cats:
         source = random.choice(category['sources'])
-        log(f"🕵️ 正在从 {source['name']} 搜寻深度观点...")
+        log(f"🕵️ 正在读取: {source['name']}")
         
         feed = feedparser.parse(source['url'])
         if feed.entries:
             article = feed.entries[0]
             log(f"📖 发现文章: {article.title}")
             
-            content = fetch_content(article.link)
-            if content:
-                try:
-                    # 2026 现代调用语法
-                    response = client.models.generate_content(
-                        model='gemini-1.5-flash',
-                        contents=f"你是一位顶级战略情报官。分析文章：{content}。请给出一个极其犀利、反直觉且能激荡思维的观点。100字内。"
-                    )
-                    
-                    if response.text:
-                        report = f"💡 来自【{source['name']}】的思维激荡：\n{response.text}\n🔗 原文: {article.link}"
-                        final_reports.append(report)
-                        log(f"✅ AI 成功解析: {source['name']}")
-                except Exception as e:
-                    log(f"⚠️ AI 思考中断: {e}")
+            try:
+                # 抓取全文
+                res = requests.get(f"https://r.jina.ai/{article.link}", timeout=30)
+                ai_text = get_ai_response(res.text)
+                
+                if ai_text:
+                    report = f"💡 来自【{source['name']}】的思维激荡：\n{ai_text}\n🔗 原文: {article.link}"
+                    final_reports.append(report)
+                    log(f"✅ {source['name']} 解析成功")
+            except Exception as e:
+                log(f"❌ 处理失败: {e}")
 
     if final_reports:
-        full_text = "Thinkinghub 每日思维激荡汇报：\n\n" + "\n\n---\n\n".join(final_reports)
-        requests.post(LARK_WEBHOOK, json={"msg_type": "text", "content": {"text": full_text}})
-        log("🎯 报告已送达飞书！")
+        # 关键词 Thinkinghub 必须存在以通过飞书校验
+        full_text = "Thinkinghub 汇报：\n\n" + "\n\n---\n\n".join(final_reports)
+        r = requests.post(LARK_WEBHOOK, json={"msg_type": "text", "content": {"text": full_text}})
+        log(f"🎯 飞书回执: {r.text}")
     else:
-        log("📭 本次未生成有效报告。")
+        log("📭 本次未生成任何有效报告")
 
 if __name__ == "__main__":
     main()
