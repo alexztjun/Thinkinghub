@@ -57,22 +57,20 @@ def main():
             except:
                 continue
 
-    # 组合报告并推送到飞书
+   # 组合报告并推送到飞书
     if final_reports:
-        full_text = "\n---\n".join(final_reports)
-        # 飞书格式
+        # 确保关键词 Thinkinghub 就在正文里
+        full_text = "Thinkinghub 每日汇报已送达：\n\n" + "\n---\n".join(final_reports)
+        
+        # 使用最稳妥的文本格式进行测试
         payload = {
-            "msg_type": "post",
+            "msg_type": "text",
             "content": {
-                "post": {
-                    "zh_cn": {
-                        "title": "Thinkinghub 每日思维激荡",
-                        "content": [[{"tag": "text", "text": full_text}]]
-                    }
-                }
+                "text": full_text
             }
         }
-        requests.post(LARK_WEBHOOK, json=payload)
-
-if __name__ == "__main__":
-    main()
+        
+        # 发送并打印结果
+        response = requests.post(LARK_WEBHOOK, json=payload)
+        print(f"飞书返回状态码: {response.status_code}")
+        print(f"飞书返回内容: {response.text}")
