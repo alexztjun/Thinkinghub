@@ -5,81 +5,73 @@ import yaml
 import google.generativeai as genai
 import random
 import sys
-import time
 
 def log(msg):
     print(f"--- [LOG]: {msg} ---")
     sys.stdout.flush()
 
-log("正在启动程序...")
+log("正在启动 Thinkinghub 引擎...")
 GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 LARK_WEBHOOK = os.getenv("LARK_WEBHOOK")
 
 if not GEMINI_KEY or not LARK_WEBHOOK:
-    log("错误：环境变量缺失！")
+    log("错误：环境变量配置不完整")
     sys.exit(1)
 
-# 配置 Gemini
 genai.configure(api_key=GEMINI_KEY)
 
-def fetch_content(url):
-    try:
-        # 增加超时时间到 30 秒，防止抓取国外网站卡死
-        res = requests.get(f"https://r.jina.ai/{url}", timeout=30)
-        return res.text[:6000]
-    except Exception as e:
-        log(f"无法抓取链接: {e}")
-        return ""
+def get_ai_response(content):
+    # 自修复逻辑：尝试不同的模型名称
+    model_names = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro']
+    prompt = f"分析文章：{content[:6000]}。请提供一个能激荡思考、反常识的视角，100字内。"
+    
+    for name in model_names:
+        try:
+            log(f"尝试调用模型: {name}")
+            model = genai.GenerativeModel(name)
+            response = model.generate_content(prompt)
+            return response.text
+        except Exception as e:
+            log(f"模型 {name} 调用失败: {e}")
+            continue
+    return None
 
 def main():
-    log("加载信源清单...")
     with open("sources.yaml", "r", encoding='utf-8') as f:
         config = yaml.safe_load(f)
     
     final_reports = []
-    # 随机选 3 个分类，激荡思维
+    # 从 38 个源中随机选 3 个，保持思维多样性 [cite: 3]
     selected_cats = random.sample(config['categories'], 3)
     
     for category in selected_cats:
         source = random.choice(category['sources'])
-        log(f"正在读取 {source['name']} 的最新动态...")
+        log(f"正在从 {source['name']} 寻找灵感...")
         
         feed = feedparser.parse(source['url'])
         if feed.entries:
             article = feed.entries[0]
             log(f"发现文章: {article.title}")
             
-            content = fetch_content(article.link)
-            if content:
-                # 💡 修复点：使用更标准的模型名称字符串
-                model = genai.GenerativeModel(model_name='gemini-1.5-flash')
+            try:
+                # 使用 Jina Reader 抓取
+                res = requests.get(f"https://r.jina.ai/{article.link}", timeout=25)
+                ai_text = get_ai_response(res.text)
                 
-                prompt = f"""
-                你是一位博学且具有批判性思维的战略情报官。
-                请分析这篇文章：{content}
-                任务：提供一个反常识或能激荡思考的视角，100字以内。
-                """
-                
-                try:
-                    # 增加一点重试机制
-                    response = model.generate_content(prompt)
-                    report = f"💡 来自【{source['name']}】的思维碰撞：\n{response.text}\n🔗 原文: {article.link}"
+                if ai_text:
+                    report = f"💡 来自【{source['name']}】的思维激荡：\n{ai_text}\n🔗 原文: {article.link}"
                     final_reports.append(report)
-                    log(f"AI 成功生成报告：{source['name']}")
-                except Exception as e:
-                    log(f"AI 思考失败: {e}")
+                    log("AI 分析完成")
+            except Exception as e:
+                log(f"处理失败: {e}")
 
-    # 推送逻辑
     if final_reports:
-        # 关键词必须包含 Thinkinghub
-        full_text = "Thinkinghub 每日思维激荡汇报：\n\n" + "\n\n---\n\n".join(final_reports)
-        payload = {"msg_type": "text", "content": {"text": full_text}}
-        
-        log("推送至飞书群...")
-        r = requests.post(LARK_WEBHOOK, json=payload)
-        log(f"飞书回执: {r.text}")
+        # 关键词 Thinkinghub 必须存在
+        full_text = "Thinkinghub 每日汇报：\n\n" + "\n\n---\n\n".join(final_reports)
+        requests.post(LARK_WEBHOOK, json={"msg_type": "text", "content": {"text": full_text}})
+        log("报告已发送至飞书")
     else:
-        log("警告：本次运行未生成有效报告。")
+        log("本次未生成有效内容")
 
 if __name__ == "__main__":
     main()
