@@ -1,0 +1,57 @@
+# Thinkinghub 完整版核心信源配置 (共 38 个)
+categories:
+  - name: "1. The Visionaries (远见者/创投思维)"
+    sources:
+      - [cite_start]{ name: "Paul Graham", url: "http://www.paulgraham.com/rss.html", tag: "Meta Cognition" } [cite: 7]
+      - [cite_start]{ name: "A Smart Bear", url: "https://longform.asmartbear.com/feed/", tag: "SaaS Bootstrapping" } [cite: 7]
+      - [cite_start]{ name: "NFX", url: "https://www.nfx.com/rss.xml", tag: "Network Effects" } [cite: 7]
+      - [cite_start]{ name: "Farnam Street", url: "https://fs.blog/feed/", tag: "Mental Models" } [cite: 7]
+      - [cite_start]{ name: "Not Boring", url: "https://www.notboring.co/feed", tag: "Tech Optimism" } [cite: 7]
+      - { name: "Gwern Branwen", url: "https://www.gwern.net/atom.xml", tag: "Internet Research" }
+
+  - name: "2. The Builders (实干家/技术工程)"
+    sources:
+      - [cite_start]{ name: "Netflix TechBlog", url: "https://netflixtechblog.com/feed", tag: "System Design" } [cite: 10]
+      - [cite_start]{ name: "Anthropic Research", url: "https://www.anthropic.com/index.xml", tag: "LLM Safety" } [cite: 11]
+      - [cite_start]{ name: "Chip Huyen", url: "https://huyenchip.com/feed.xml", tag: "ML Engineering" } [cite: 11]
+      - [cite_start]{ name: "Lilian Weng", url: "https://lilianweng.github.io/posts/index.xml", tag: "AI Architecture" } [cite: 11]
+      - [cite_start]{ name: "Eugene Yan", url: "https://eugeneyan.com/feed.xml", tag: "Applied ML" } [cite: 11]
+      - { name: "Simon Willison", url: "https://simonwillison.net/atom/entries/", tag: "LLM Engineering" }
+      - { name: "Dan Luu", url: "https://danluu.com/atom.xml", tag: "System Efficiency" }
+
+  - name: "3. The Analysts (深度分析/宏观策略)"
+    sources:
+      - [cite_start]{ name: "Fabricated Knowledge", url: "https://www.fabricatedknowledge.com/feed", tag: "Semiconductors" } [cite: 15]
+      - [cite_start]{ name: "Apricitas Economics", url: "https://www.apricitas.io/feed", tag: "Macro Data" } [cite: 15]
+      - [cite_start]{ name: "Tanay's Newsletter", url: "https://tanay.substack.com/feed", tag: "Tech Strategy" } [cite: 15]
+      - [cite_start]{ name: "Benedict Evans", url: "https://www.ben-evans.com/feed", tag: "Macro Trends" } [cite: 15]
+      - [cite_start]{ name: "Damodaran", url: "http://aswathdamodaran.blogspot.com/feeds/posts/default", tag: "Valuation" } [cite: 15]
+      - { name: "Stratechery", url: "https://stratechery.com/feed/", tag: "Tech Strategy" }
+
+  - name: "4. The Deep Divers (深度访谈/播客)"
+    sources:
+      - [cite_start]{ name: "Dwarkesh Patel", url: "https://www.dwarkeshpatel.com/feed", tag: "Hardcore Interview" } [cite: 18]
+      - [cite_start]{ name: "Lex Fridman", url: "https://lexfridman.com/feed/podcast/", tag: "Long Form Dialogue" } [cite: 18]
+      - [cite_start]{ name: "Acquired", url: "https://www.acquired.fm/feed", tag: "Business History" } [cite: 18]
+      - [cite_start]{ name: "Latent Space", url: "https://www.latent.space/feed", tag: "AI Engineering" } [cite: 18]
+      - [cite_start]{ name: "All-In Podcast", url: "https://allin.libsyn.com/rss", tag: "VC Roundtable" } [cite: 18]
+
+  - name: "5. Product Minds (产品思维/增长)"
+    sources:
+      - [cite_start]{ name: "First Round Review", url: "https://review.firstround.com/feed", tag: "Startup Tactics" } [cite: 22]
+      - [cite_start]{ name: "Casey Accidental", url: "https://caseyaccidental.com/feed", tag: "Growth Strategy" } [cite: 22]
+      - [cite_start]{ name: "Bring the Donuts", url: "https://www.bringthedonuts.com/feed", tag: "Product Leadership" } [cite: 22]
+      - [cite_start]{ name: "SVPG", url: "https://www.svpg.com/feed", tag: "Product Mgmt Core" } [cite: 22]
+      - [cite_start]{ name: "Growth Unhinged", url: "https://www.growthunhinged.com/feed", tag: "SaaS Growth" } [cite: 22]
+      - { name: "Kalzumeus", url: "https://www.kalzumeus.com/feed/", tag: "Engineering Business" }
+
+  - name: "6. The Frontiers (前沿硬科技)"
+    sources:
+      - [cite_start]{ name: "Asianometry", url: "https://asianometry.substack.com/feed", tag: "Hard Tech History" } [cite: 28]
+      - [cite_start]{ name: "Real Engineering", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCR1IuLEqb6UEAofVt72y2iA", tag: "Engineering DeepDive" } [cite: 28]
+      - [cite_start]{ name: "Casey Handmer", url: "https://caseyhandmer.wordpress.com/feed/", tag: "First Principles" } [cite: 28]
+      - [cite_start]{ name: "Quanta Magazine", url: "https://www.quantamagazine.org/feed", tag: "Quantum Physics" } [cite: 28]
+      - [cite_start]{ name: "Century of Biology", url: "https://www.centuryofbiology.com/feed", tag: "TechBio" } [cite: 28]
+      - [cite_start]{ name: "Asimov Press", url: "https://asimov.press/feed", tag: "Bio Manufacturing" } [cite: 28]
+      - [cite_start]{ name: "SFIA", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCW66obhS2Z6YfEa2LAVS-Gg", tag: "Futurism Hardcore" } [cite: 28]
+      - [cite_start]{ name: "The Robot Report", url: "https://www.therobotreport.com/feed", tag: "Robotics Industry" } [cite: 28]
