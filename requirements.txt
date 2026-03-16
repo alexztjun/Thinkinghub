@@ -1,4 +1,4 @@
-google-genai
 requests
 feedparser
 PyYAML
+google-generativeai
